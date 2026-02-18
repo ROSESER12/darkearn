@@ -287,6 +287,123 @@ function showTab(id){
 document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
+</script><script>
+let tg = window.Telegram.WebApp;
+tg.expand();
+
+/* DATA */
+let coins = +localStorage.getItem("coins") || 0;
+let power = +localStorage.getItem("power") || 1;
+let farm = +localStorage.getItem("farm") || 0;
+let energy = +localStorage.getItem("energy") || 100;
+let level = +localStorage.getItem("level") || 1;
+let nfts = JSON.parse(localStorage.getItem("nfts") || "[]");
+
+/* Telegram user */
+if(tg.initDataUnsafe?.user){
+document.getElementById("username").innerText = "@"+tg.initDataUnsafe.user.username;
+document.getElementById("refLink").innerText = "https://t.me/DarkEarnBot?start="+tg.initDataUnsafe.user.id;
+}
+
+/* UI Update */
+function updateUI(){
+document.getElementById("coins").innerText = coins;
+document.getElementById("coins2").innerText = coins;
+document.getElementById("power").innerText = power;
+document.getElementById("farm").innerText = farm;
+document.getElementById("energy").innerText = energy;
+document.getElementById("level").innerText = level;
+
+localStorage.setItem("coins", coins);
+localStorage.setItem("power", power);
+localStorage.setItem("farm", farm);
+localStorage.setItem("energy", energy);
+localStorage.setItem("level", level);
+localStorage.setItem("nfts", JSON.stringify(nfts));
+
+let nftBox = document.getElementById("myNFTs");
+nftBox.innerHTML = "";
+nfts.forEach(n => nftBox.innerHTML += "<p>• "+n+"</p>");
+}
+updateUI();
+
+/* TAP */
+function tap(){
+if(energy <= 0) return alert("No energy");
+coins += power;
+energy--;
+level = Math.floor(coins / 1000) + 1;
+updateUI();
+}
+
+/* Energy regen */
+setInterval(()=>{
+if(energy < 100){
+energy++;
+updateUI();
+}
+}, 2000);
+
+/* Auto farm */
+setInterval(()=>{
+if(farm > 0){
+coins += farm;
+updateUI();
+}
+}, 1000);
+
+/* Upgrades */
+function upgradePower(){
+if(coins >= 50){
+coins -= 50;
+power++;
+updateUI();
+}else alert("Not enough coins");
+}
+
+function upgradeFarm(){
+if(coins >= 200){
+coins -= 200;
+farm++;
+updateUI();
+}else alert("Not enough coins");
+}
+
+/* Daily reward 24h */
+function daily(){
+let last = localStorage.getItem("daily");
+if(!last || Date.now() - last > 86400000){
+coins += 500;
+localStorage.setItem("daily", Date.now());
+updateUI();
+alert("Daily claimed!");
+}else{
+alert("Come back tomorrow");
+}
+}
+
+/* Task reward */
+function taskReward(){
+coins += 1000;
+updateUI();
+alert("Task completed!");
+}
+
+/* NFT BUY */
+function buyNFT(name, price){
+if(coins >= price){
+coins -= price;
+nfts.push(name);
+updateUI();
+alert("NFT purchased: "+name);
+}else alert("Not enough coins");
+}
+
+/* Tabs */
+function showTab(id){
+document.querySelectorAll(".tab").forEach(t => t.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+}
 </script>
 </body>
 </html>
