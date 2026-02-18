@@ -147,9 +147,12 @@ let power = Number(localStorage.getItem("power")) || 1;
 let energy = Number(localStorage.getItem("energy")) || 100;
 
 // Telegram user
-if(tg.initDataUnsafe.user){
+if(tg.initDataUnsafe && tg.initDataUnsafe.user){
 document.getElementById("username").innerText = "@" + tg.initDataUnsafe.user.username;
 document.getElementById("refLink").innerText = "https://t.me/DarkEarnBot?start=" + tg.initDataUnsafe.user.id;
+}else{
+document.getElementById("username").innerText = "Guest";
+document.getElementById("refLink").innerText = "Open in Telegram";
 }
 
 // UI update
@@ -192,13 +195,21 @@ alert("Not enough coins");
 }
 }
 
-// Task reward
+// Task reward 
 function claimTask(){
 coins += 100;
 updateUI();
 alert("Task completed!");
 }
 
-// Tabs
+// Tabs system
 function showTab(id){
-document.querySelectorAll(".tab").forEach(t=>t.
+document.querySelectorAll(".tab").forEach(t=>{
+t.classList.add("hidden");
+});
+document.getElementById(id).classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
