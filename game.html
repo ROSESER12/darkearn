@@ -2,134 +2,126 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>DarkEarn Crypto</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dark Crypto</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 body {
-    background: radial-gradient(circle at top, #0a0a1a, #000);
-    color: white;
-    font-family: 'Segoe UI', sans-serif;
-    text-align: center;
-    padding-top: 40px;
+  background: radial-gradient(circle at top, #0f172a, #020617);
+  color: white;
+  font-family: Orbitron, sans-serif;
+  text-align: center;
+  padding-top: 50px;
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 25px;
+  width: 90%;
+  max-width: 420px;
+  margin: auto;
+  box-shadow: 0 0 25px #7c3aed;
 }
 
 h1 {
-    font-size: 32px;
-    text-shadow: 0 0 15px #00ffff;
+  font-size: 26px;
+  color: #7c3aed;
 }
 
 #balance {
-    font-size: 28px;
-    margin-top: 10px;
-    color: #00ffcc;
+  font-size: 42px;
+  margin: 15px 0;
 }
 
-.crypto-btn {
-    margin-top: 40px;
-    width: 160px;
-    height: 160px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00ffff, #0088ff);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    font-weight: bold;
-    box-shadow: 0 0 40px #00ffff;
-    border: none;
-    transition: 0.1s;
+.tap-btn {
+  background: linear-gradient(135deg, #7c3aed, #22d3ee);
+  border: none;
+  padding: 20px 40px;
+  font-size: 22px;
+  border-radius: 50px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 20px #22d3ee;
+  transition: 0.1s;
 }
 
-.crypto-btn:active {
-    transform: scale(0.9);
-    box-shadow: 0 0 80px #00ffff;
+.tap-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 0 40px #7c3aed;
 }
 
-.panel {
-    margin-top: 30px;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid #00ffff;
-    border-radius: 12px;
-    padding: 15px;
-    width: 80%;
-    margin-left: auto;
-    margin-right: auto;
+.menu {
+  margin-top: 15px;
 }
 
-button {
-    background: black;
-    color: #00ffff;
-    border: 1px solid #00ffff;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 8px;
-    font-size: 14px;
-}
-
-button:hover {
-    background: #00ffff;
-    color: black;
+.menu button {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid #7c3aed;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 12px;
+  margin: 5px;
+  cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h1>⚡ DarkEarn Crypto</h1>
-<div id="balance">0 ⚡</div>
+<div class="card">
+<h1>😈 Dark Crypto Game</h1>
 
-<button class="crypto-btn" id="tap">TAP</button>
+<div>💰 Balance</div>
+<div id="balance">0</div>
 
-<div class="panel">
-    <h3>🚀 Upgrades</h3>
-    <button onclick="upgrade()">Level Up (Cost: <span id="price">50</span>)</button>
-    <div>Level: <span id="level">1</span></div>
+<button class="tap-btn" onclick="tap()">⚡ TAP</button>
+
+<div class="menu">
+<button onclick="upgrade()">🚀 Upgrade</button>
+<button onclick="resetGame()">♻ Reset</button>
 </div>
 
-<div class="panel">
-    <h3>👥 Referral</h3>
-    <div>Your ID: <span id="uid"></span></div>
 </div>
 
 <script>
-let tg = window.Telegram.WebApp;
-tg.expand();
-
 let coins = localStorage.getItem("coins") || 0;
 let level = localStorage.getItem("level") || 1;
-coins = parseInt(coins);
-level = parseInt(level);
 
 function updateUI() {
-    document.getElementById("balance").innerText = coins + " ⚡";
-    document.getElementById("level").innerText = level;
-    document.getElementById("price").innerText = level * 50;
+  document.getElementById("balance").innerText = coins;
 }
+updateUI();
 
-document.getElementById("tap").onclick = () => {
-    coins += level;
-    localStorage.setItem("coins", coins);
-    updateUI();
-};
+function tap() {
+  coins = parseInt(coins) + parseInt(level);
+  localStorage.setItem("coins", coins);
+  updateUI();
+}
 
 function upgrade() {
-    let price = level * 50;
-    if (coins >= price) {
-        coins -= price;
-        level++;
-        localStorage.setItem("coins", coins);
-        localStorage.setItem("level", level);
-        alert("🔥 Level UP!");
-    } else {
-        alert("❌ Not enough coins");
-    }
-    updateUI();
+  let price = level * 50;
+  if (coins >= price) {
+    coins -= price;
+    level++;
+    alert("🔥 Level UP: " + level);
+    localStorage.setItem("coins", coins);
+    localStorage.setItem("level", level);
+  } else {
+    alert("❌ Need " + price + " coins");
+  }
 }
 
-document.getElementById("uid").innerText = tg.initDataUnsafe?.user?.id || "guest";
-
-updateUI();
+function resetGame() {
+  localStorage.clear();
+  coins = 0;
+  level = 1;
+  updateUI();
+}
 </script>
 
 </body>
