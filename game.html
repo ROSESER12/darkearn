@@ -1,177 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DarkEarn PRO</title>
+
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
-* { box-sizing: border-box; }
-
-body {
-  background: radial-gradient(circle at top, #0b0f1a, #020617);
-  color: white;
-  font-family: Inter, sans-serif;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  height: 100vh;
+body{
+margin:0;
+font-family:Arial;
+background:#060b1a;
+color:white;
+text-align:center;
 }
 
-.app {
-  width: 100%;
-  max-width: 420px;
-  padding: 20px;
+/* Glass card */
+.card{
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(15px);
+border-radius:20px;
+padding:20px;
+margin:10px;
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:0 0 20px rgba(0,255,255,0.15);
 }
 
-.header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Tap button */
+.tap{
+width:100%;
+padding:25px;
+border:none;
+border-radius:15px;
+font-size:24px;
+font-weight:bold;
+background:linear-gradient(135deg,#8a2be2,#00ffff);
+color:white;
+box-shadow:0 0 20px cyan;
 }
 
-.avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 2px solid #22d3ee;
+/* Small buttons */
+.btn{
+padding:12px 18px;
+border-radius:10px;
+border:1px solid #8a2be2;
+background:none;
+color:white;
+margin:5px;
 }
 
-.username {
-  font-size: 18px;
-  font-weight: 600;
+/* Bottom menu */
+.menu{
+position:fixed;
+bottom:0;
+left:0;
+width:100%;
+display:flex;
+justify-content:space-around;
+background:#080f25;
+padding:10px 0;
+border-top:1px solid rgba(255,255,255,0.1);
 }
 
-.balance-card {
-  margin-top: 20px;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(20px);
-  border-radius: 18px;
-  padding: 20px;
-  border: 1px solid rgba(255,255,255,0.1);
+.menu button{
+background:none;
+border:none;
+color:white;
+font-size:14px;
 }
 
-.balance {
-  font-size: 36px;
-  font-weight: 700;
-  color: #22d3ee;
-}
-
-.tap-btn {
-  margin-top: 25px;
-  width: 100%;
-  padding: 22px;
-  border-radius: 18px;
-  border: none;
-  background: linear-gradient(135deg, #7c3aed, #22d3ee);
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
-  box-shadow: 0 0 25px #22d3ee;
-  transition: 0.1s;
-}
-
-.tap-btn:active {
-  transform: scale(0.95);
-  box-shadow: 0 0 50px #7c3aed;
-}
-
-.menu {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.menu button {
-  flex: 1;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid #7c3aed;
-  padding: 12px;
-  border-radius: 12px;
-  color: white;
-  font-weight: 600;
-}
-
-.footer {
-  margin-top: 15px;
-  text-align: center;
-  font-size: 12px;
-  opacity: 0.5;
-}
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
-<div class="app">
 
-<div class="header">
-<img id="avatar" class="avatar">
-<div class="username" id="username">Guest</div>
+<h2>🌌 DarkEarn PRO</h2>
+
+<div id="earnTab" class="tab">
+<div class="card">
+<h3>Balance</h3>
+<h1 id="coins">0</h1>
+<h4>⚡ Energy: <span id="energy">100</span>/100</h4>
+<button class="tap" onclick="tap()">⚡ TAP</button>
+</div>
 </div>
 
-<div class="balance-card">
-<div>💰 Balance</div>
-<div class="balance" id="balance">0</div>
-<button class="tap-btn" onclick="tap()">⚡ TAP</button>
+<div id="upgradeTab" class="tab hidden">
+<div class="card">
+<h3>🚀 Upgrades</h3>
+<p>Tap Power: <span id="power">1</span></p>
+<button class="btn" onclick="upgrade()">Upgrade (50 coins)</button>
+</div>
+</div>
 
+<div id="tasksTab" class="tab hidden">
+<div class="card">
+<h3>🎁 Tasks</h3>
+<p>Join Telegram Channel</p>
+<button class="btn" onclick="claimTask()">Claim 100 coins</button>
+</div>
+</div>
+
+<div id="friendsTab" class="tab hidden">
+<div class="card">
+<h3>👥 Friends</h3>
+<p>Your referral link:</p>
+<p id="refLink"></p>
+</div>
+</div>
+
+<div id="leaderTab" class="tab hidden">
+<div class="card">
+<h3>🏆 Leaderboard</h3>
+<p>1. CryptoKing — 99999</p>
+<p>2. DarkMiner — 50000</p>
+<p>3. You — <span id="coins2">0</span></p>
+</div>
+</div>
+
+<div id="profileTab" class="tab hidden">
+<div class="card">
+<h3>👤 Profile</h3>
+<p id="username">Loading...</p>
+</div>
+</div>
+
+<!-- Bottom Menu -->
 <div class="menu">
-<button onclick="upgrade()">🚀 Upgrade</button>
-<button onclick="resetGame()">♻ Reset</button>
-</div>
-</div>
-
-<div class="footer">DarkEarn PRO • Crypto Game</div>
-
+<button onclick="showTab('earnTab')">🪙 Earn</button>
+<button onclick="showTab('upgradeTab')">🚀 Upgrades</button>
+<button onclick="showTab('tasksTab')">🎁 Tasks</button>
+<button onclick="showTab('friendsTab')">👥 Friends</button>
+<button onclick="showTab('leaderTab')">🏆 Top</button>
+<button onclick="showTab('profileTab')">👤 Profile</button>
 </div>
 
 <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-let coins = Number(localStorage.getItem("coins") || 0);
-let level = Number(localStorage.getItem("level") || 1);
+// Load data
+let coins = Number(localStorage.getItem("coins")) || 0;
+let power = Number(localStorage.getItem("power")) || 1;
+let energy = Number(localStorage.getItem("energy")) || 100;
 
 // Telegram user
-if (tg.initDataUnsafe?.user) {
-  document.getElementById("username").innerText = tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name;
-  document.getElementById("avatar").src = tg.initDataUnsafe.user.photo_url || "https://i.imgur.com/6VBx3io.png";
+if(tg.initDataUnsafe.user){
+document.getElementById("username").innerText = "@" + tg.initDataUnsafe.user.username;
+document.getElementById("refLink").innerText = "https://t.me/DarkEarnBot?start=" + tg.initDataUnsafe.user.id;
 }
 
-function updateUI() {
-  document.getElementById("balance").innerText = coins + " ⚡";
+// UI update
+function updateUI(){
+document.getElementById("coins").innerText = coins;
+document.getElementById("coins2").innerText = coins;
+document.getElementById("power").innerText = power;
+document.getElementById("energy").innerText = energy;
+localStorage.setItem("coins", coins);
+localStorage.setItem("power", power);
+localStorage.setItem("energy", energy);
 }
 updateUI();
 
-function tap() {
-  coins += level;
-  localStorage.setItem("coins", coins);
-  updateUI();
+// Tap
+function tap(){
+if(energy <= 0){ alert("No energy"); return; }
+coins += power;
+energy--;
+updateUI();
 }
 
-function upgrade() {
-  let price = level * 100;
-  if (coins >= price) {
-    coins -= price;
-    level++;
-    localStorage.setItem("coins", coins);
-    localStorage.setItem("level", level);
-    alert("Level UP! New level: " + level);
-  } else {
-    alert("Need " + price + " coins");
-  }
+// Energy regen
+setInterval(()=>{
+if(energy < 100){
+energy++;
+updateUI();
+}
+},2000);
+
+// Upgrade
+function upgrade(){
+if(coins >= 50){
+coins -= 50;
+power++;
+updateUI();
+alert("Upgrade successful!");
+}else{
+alert("Not enough coins");
+}
 }
 
-function resetGame() {
-  localStorage.clear();
-  coins = 0;
-  level = 1;
-  updateUI();
+// Task reward
+function claimTask(){
+coins += 100;
+updateUI();
+alert("Task completed!");
 }
-</script>
 
-</body>
-</html>
+// Tabs
+function showTab(id){
+document.querySelectorAll(".tab").forEach(t=>t.
