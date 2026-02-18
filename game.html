@@ -2,159 +2,144 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DarkCoin</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
-*{box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box}
 body{
-margin:0;
 font-family:Inter,Arial;
+background:radial-gradient(circle at top,#0a0f2a,#000);
 color:white;
-background:black;
 overflow:hidden;
+text-align:center;
 }
 
-/* Animated gradient */
+/* Animated background particles */
 .bg{
 position:fixed;inset:0;
-background:radial-gradient(circle at 20% 20%,#0f0 0%,transparent 40%),
-radial-gradient(circle at 80% 80%,#00f 0%,transparent 40%),
-linear-gradient(120deg,#000,#02040f,#000);
-animation:bgmove 20s infinite alternate;
-z-index:-5;
+background:url("https://i.imgur.com/Z7nq9sG.png");
+opacity:0.08;
+animation:move 40s linear infinite;
+z-index:-2;
 }
-@keyframes bgmove{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
-
-/* Skull layer */
-.skulls{
-position:fixed;inset:0;
-background:url("https://i.imgur.com/9Q9Z6qf.png");
-opacity:0.05;
-animation:moveSkull 80s linear infinite;
-z-index:-4;
+@keyframes move{
+0%{background-position:0 0}
+100%{background-position:1000px 1000px}
 }
-@keyframes moveSkull{0%{background-position:0 0}100%{background-position:2000px 2000px}}
 
-/* Top Brand */
+/* Top logo */
 .top{
-position:fixed;top:0;width:100%;
-padding:12px;
-background:rgba(0,0,0,0.6);
-backdrop-filter:blur(20px);
-text-align:center;
-font-size:22px;font-weight:bold;
-border-bottom:1px solid rgba(255,255,255,0.1);
-z-index:10;
+padding:15px;
+font-size:26px;
+font-weight:800;
+letter-spacing:2px;
+color:#fff;
+text-shadow:0 0 20px #00ffff;
 }
 
-/* Glass card */
-.card{
-margin:12px;
-padding:18px;
-border-radius:20px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(20px);
-border:1px solid rgba(255,255,255,0.15);
-box-shadow:0 0 30px rgba(0,255,255,0.1);
-transition:.3s;
-}
-.card:hover{transform:scale(1.02)}
-
-/* Tap button */
-.tap{
-width:100%;
-padding:22px;
-font-size:24px;
+/* Coin center */
+.coin{
+width:200px;height:200px;
+border-radius:50%;
+margin:auto;
+background:radial-gradient(circle,#ffdd00,#ff9900);
+box-shadow:0 0 60px #ffb700;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:32px;
 font-weight:bold;
-border-radius:16px;
+animation:float 3s ease-in-out infinite;
+}
+@keyframes float{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-15px)}
+}
+
+/* Balance HUD */
+.hud{
+display:flex;
+justify-content:space-around;
+margin:15px;
+}
+.hud div{
+background:rgba(255,255,255,0.05);
+padding:10px 15px;
+border-radius:12px;
+backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.15);
+}
+
+/* TAP BUTTON */
+.tap{
+margin-top:15px;
+padding:20px;
+width:80%;
 border:none;
+border-radius:18px;
+font-size:20px;
+font-weight:bold;
+background:linear-gradient(135deg,#00ffff,#6a00ff);
 color:white;
-background:linear-gradient(135deg,#00ffff,#8a2be2);
-box-shadow:0 0 25px cyan;
+box-shadow:0 0 30px #00ffff;
 }
 
-/* Buttons */
-.btn{
-padding:10px 16px;
-border-radius:10px;
-border:1px solid cyan;
-background:none;
-color:white;
-margin:5px;
-}
-
-/* Menu */
+/* Bottom menu */
 .menu{
 position:fixed;
 bottom:0;width:100%;
 display:flex;
 justify-content:space-around;
-background:rgba(0,0,0,0.6);
-backdrop-filter:blur(15px);
-padding:8px;
+background:#050812;
+padding:12px 0;
 border-top:1px solid rgba(255,255,255,0.1);
 }
-.menu button{background:none;border:none;color:white;font-size:12px}
+.menu button{
+background:none;border:none;color:white;font-size:12px;
+}
+
+.card{
+background:rgba(255,255,255,0.04);
+margin:10px;padding:15px;border-radius:16px;
+border:1px solid rgba(255,255,255,0.1);
+backdrop-filter:blur(10px);
+}
 
 .hidden{display:none}
-
-/* NFT Card */
-.nft{
-border:1px solid cyan;
-padding:12px;
-margin:10px;
-border-radius:14px;
-background:rgba(0,0,0,0.5);
-}
 </style>
 </head>
 
 <body>
-
 <div class="bg"></div>
-<div class="skulls"></div>
 
 <div class="top">🪙 DarkCoin</div>
-<br><br><br>
 
-<!-- EARN -->
-<div id="earnTab" class="tab">
-<div class="card">
-<h3>Balance</h3>
-<h1 id="coins">0</h1>
-<p>Energy: <span id="energy">100</span></p>
+<!-- MAIN -->
+<div id="earnTab">
+<div class="hud">
+<div>Balance<br><b id="coins">0</b></div>
+<div>⚡ Energy<br><b id="energy">100</b></div>
+<div>Level<br><b id="level">1</b></div>
+</div>
+
+<div class="coin">DC</div>
+
 <button class="tap" onclick="tap()">Mine DarkCoin</button>
-</div>
-</div>
-
-<!-- UPGRADES -->
-<div id="upTab" class="tab hidden">
-<div class="card">
-<h3>Upgrades</h3>
-<p>Power: <span id="power">1</span></p>
-<p>Auto Farm: <span id="farm">0</span>/sec</p>
-<button class="btn" onclick="upgradePower()">Power +1 (50)</button>
-<button class="btn" onclick="upgradeFarm()">Farm +1 (200)</button>
-</div>
 </div>
 
 <!-- NFT MARKET -->
-<div id="marketTab" class="tab hidden">
+<div id="nftTab" class="hidden">
 <div class="card">
-<h3>NFT Marketplace</h3>
-
-<div class="nft">
-<p>Genesis Skull</p>
-<p>Price: 1000 DC</p>
-<button class="btn" onclick="buyNFT('Genesis Skull',1000)">Buy</button>
+<h3>NFT Market</h3>
+<div class="card">
+Skull #001 - Price 1000 DC  
+<button onclick="buyNFT('Skull #001',1000)">Buy</button>
 </div>
-
-<div class="nft">
-<p>Dark Phantom</p>
-<p>Price: 5000 DC</p>
-<button class="btn" onclick="buyNFT('Dark Phantom',5000)">Buy</button>
+<div class="card">
+Golden Skull - Price 5000 DC  
+<button onclick="buyNFT('Golden Skull',5000)">Buy</button>
 </div>
 
 <h4>Your NFTs</h4>
@@ -163,18 +148,16 @@ background:rgba(0,0,0,0.5);
 </div>
 
 <!-- PROFILE -->
-<div id="profileTab" class="tab hidden">
+<div id="profileTab" class="hidden">
 <div class="card">
-<p id="username">Loading...</p>
-<p>Level: <span id="level">1</span></p>
+<p id="username">User</p>
 </div>
 </div>
 
 <!-- MENU -->
 <div class="menu">
 <button onclick="showTab('earnTab')">Earn</button>
-<button onclick="showTab('upTab')">Upgrades</button>
-<button onclick="showTab('marketTab')">NFT</button>
+<button onclick="showTab('nftTab')">NFT</button>
 <button onclick="showTab('profileTab')">Profile</button>
 </div>
 
@@ -184,28 +167,26 @@ tg.expand();
 
 /* DATA */
 let coins=+localStorage.getItem("coins")||0;
-let power=+localStorage.getItem("power")||1;
-let farm=+localStorage.getItem("farm")||0;
 let energy=+localStorage.getItem("energy")||100;
 let level=+localStorage.getItem("level")||1;
 let nfts=JSON.parse(localStorage.getItem("nfts")||"[]");
 
 /* USER */
 if(tg.initDataUnsafe?.user){
-document.getElementById("username").innerText="@"+tg.initDataUnsafe.user.username;
+username.innerText="@"+tg.initDataUnsafe.user.username;
 }
 
 /* UI */
 function updateUI(){
-coinsEl=coins;
+coinsEl.innerText=coins;
+energyEl.innerText=energy;
+levelEl.innerText=level;
+
 document.getElementById("coins").innerText=coins;
-document.getElementById("power").innerText=power;
-document.getElementById("farm").innerText=farm;
 document.getElementById("energy").innerText=energy;
 document.getElementById("level").innerText=level;
+
 localStorage.setItem("coins",coins);
-localStorage.setItem("power",power);
-localStorage.setItem("farm",farm);
 localStorage.setItem("energy",energy);
 localStorage.setItem("level",level);
 localStorage.setItem("nfts",JSON.stringify(nfts));
@@ -219,36 +200,28 @@ updateUI();
 /* TAP */
 function tap(){
 if(energy<=0)return;
-coins+=power;
+coins++;
 energy--;
 level=Math.floor(coins/1000)+1;
 updateUI();
-tg.HapticFeedback?.impactOccurred("medium");
 }
 
-/* Regen */
+/* ENERGY REGEN */
 setInterval(()=>{if(energy<100){energy++;updateUI();}},2000);
 
-/* Farm */
-setInterval(()=>{coins+=farm;updateUI();},1000);
-
-/* Upgrades */
-function upgradePower(){if(coins>=50){coins-=50;power++;updateUI();}}
-function upgradeFarm(){if(coins>=200){coins-=200;farm++;updateUI();}}
-
-/* NFT */
+/* NFT BUY */
 function buyNFT(name,price){
 if(coins>=price){
 coins-=price;
 nfts.push(name);
 updateUI();
-alert("NFT Minted: "+name);
+alert("NFT purchased: "+name);
 }
 }
 
-/* Tabs */
+/* TABS */
 function showTab(id){
-document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
+document.querySelectorAll("body > div[id$='Tab']").forEach(t=>t.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 </script>
