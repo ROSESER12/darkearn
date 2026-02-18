@@ -4,22 +4,127 @@
 <meta charset="UTF-8">
 <title>DarkEarn</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<style>
+body {
+margin:0;
+background:radial-gradient(circle at top, #1a0033, #000);
+color:white;
+font-family: 'Segoe UI', sans-serif;
+text-align:center;
+}
+
+.container {
+padding-top:40px;
+}
+
+h1 {
+font-size:28px;
+color:#ff00ff;
+text-shadow:0 0 15px #ff00ff;
+}
+
+#balance {
+font-size:40px;
+margin-top:10px;
+font-weight:bold;
+}
+
+#coin {
+font-size:160px;
+margin-top:30px;
+cursor:pointer;
+transition:0.1s;
+filter: drop-shadow(0 0 20px gold);
+}
+
+#coin:active {
+transform:scale(0.9);
+}
+
+.panel {
+display:flex;
+justify-content:space-around;
+margin-top:30px;
+font-size:16px;
+}
+
+.box {
+background:rgba(255,255,255,0.05);
+padding:10px 20px;
+border-radius:15px;
+box-shadow:0 0 10px #ff00ff;
+}
+
+button {
+margin-top:20px;
+padding:12px 40px;
+font-size:18px;
+border:none;
+border-radius:15px;
+background:linear-gradient(45deg,#ff00ff,#00ffff);
+color:black;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 0 20px #00ffff;
+}
+</style>
 </head>
 
-<body style="text-align:center;font-size:30px;">
-<h1>😈 DarkEarn Game</h1>
+<body>
+<div class="container">
+<h1>😈 DarkEarn PRO</h1>
 
-<h2 id="coins">0</h2>
+<div id="balance">0 💰</div>
 
-<button onclick="tap()" style="font-size:40px;">💰 TAP</button>
+<div id="coin">🪙</div>
+
+<div class="panel">
+<div class="box">🚀 Income: <span id="income">1</span></div>
+<div class="box">⚡ Level: <span id="level">1</span></div>
+</div>
+
+<button onclick="upgrade()">UPGRADE</button>
+
+</div>
 
 <script>
-let coins = 0;
+let tg = window.Telegram.WebApp;
+tg.expand();
 
-function tap() {
-    coins++;
-    document.getElementById("coins").innerText = coins;
+let coins = localStorage.getItem("coins") || 0;
+let level = localStorage.getItem("level") || 1;
+coins = parseInt(coins);
+level = parseInt(level);
+
+function updateUI() {
+document.getElementById("balance").innerText = coins + " 💰";
+document.getElementById("income").innerText = level;
+document.getElementById("level").innerText = level;
 }
+
+document.getElementById("coin").onclick = () => {
+coins += level;
+localStorage.setItem("coins", coins);
+updateUI();
+};
+
+function upgrade() {
+let price = level * 50;
+if (coins >= price) {
+coins -= price;
+level++;
+localStorage.setItem("coins", coins);
+localStorage.setItem("level", level);
+updateUI();
+alert("🔥 Level UP!");
+} else {
+alert("❌ Need " + price + " coins");
+}
+}
+
+updateUI();
 </script>
+
 </body>
 </html>
