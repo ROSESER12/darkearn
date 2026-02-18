@@ -1,228 +1,227 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DarkCoin</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-font-family:Inter,Arial;
-background:radial-gradient(circle at top,#0a0f2a,#000);
+*{
+margin:0;
+padding:0;
+font-family:Arial, sans-serif;
 color:white;
-overflow:hidden;
-text-align:center;
 }
 
-/* Animated background particles */
-.bg{
-position:fixed;inset:0;
-background:url("https://i.imgur.com/Z7nq9sG.png");
-opacity:0.08;
-animation:move 40s linear infinite;
+body{
+background:black;
+overflow:hidden;
+}
+
+/* Skull animated background */
+.skull-bg{
+position:fixed;
+width:200%;
+height:200%;
+background:url("https://i.imgur.com/4n7X6qD.png");
+opacity:0.05;
+animation:moveSkulls 60s linear infinite;
 z-index:-2;
 }
-@keyframes move{
-0%{background-position:0 0}
-100%{background-position:1000px 1000px}
+
+@keyframes moveSkulls{
+0%{transform:translate(0,0)}
+100%{transform:translate(-50%, -50%)}
 }
 
-/* Top logo */
-.top{
-padding:15px;
+/* Header */
+header{
+text-align:center;
 font-size:26px;
-font-weight:800;
-letter-spacing:2px;
-color:#fff;
-text-shadow:0 0 20px #00ffff;
+font-weight:bold;
+letter-spacing:3px;
+padding:15px;
+border-bottom:1px solid rgba(255,255,255,0.1);
+background:rgba(0,0,0,0.6);
+backdrop-filter:blur(10px);
 }
 
-/* Coin center */
+/* Coin */
 .coin{
-width:200px;height:200px;
+width:220px;
+height:220px;
+margin:80px auto 20px;
 border-radius:50%;
-margin:auto;
-background:radial-gradient(circle,#ffdd00,#ff9900);
-box-shadow:0 0 60px #ffb700;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:32px;
-font-weight:bold;
-animation:float 3s ease-in-out infinite;
+background:url("darkcoin.png") no-repeat center/contain;
+filter:drop-shadow(0 0 40px rgba(255,255,255,0.5));
+animation:float 3s ease-in-out infinite, spin 20s linear infinite;
+cursor:pointer;
 }
+
 @keyframes float{
 0%,100%{transform:translateY(0)}
-50%{transform:translateY(-15px)}
+50%{transform:translateY(-20px)}
 }
 
-/* Balance HUD */
-.hud{
+@keyframes spin{
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+
+/* Balance */
+.balance{
+text-align:center;
+font-size:22px;
+margin-bottom:30px;
+}
+
+/* Buttons */
+.buttons{
 display:flex;
-justify-content:space-around;
-margin:15px;
-}
-.hud div{
-background:rgba(255,255,255,0.05);
-padding:10px 15px;
-border-radius:12px;
-backdrop-filter:blur(10px);
-border:1px solid rgba(255,255,255,0.15);
+justify-content:center;
+gap:15px;
 }
 
-/* TAP BUTTON */
-.tap{
-margin-top:15px;
-padding:20px;
-width:80%;
-border:none;
-border-radius:18px;
-font-size:20px;
-font-weight:bold;
-background:linear-gradient(135deg,#00ffff,#6a00ff);
-color:white;
-box-shadow:0 0 30px #00ffff;
+.btn{
+padding:12px 22px;
+border:1px solid white;
+background:black;
+cursor:pointer;
+transition:0.3s;
 }
 
-/* Bottom menu */
-.menu{
+.btn:hover{
+background:white;
+color:black;
+}
+
+/* NFT Market Panel */
+.market{
 position:fixed;
-bottom:0;width:100%;
+bottom:-100%;
+left:0;
+width:100%;
+height:60%;
+background:black;
+border-top:2px solid white;
+transition:0.5s;
+padding:15px;
+overflow:auto;
+}
+
+.market.active{
+bottom:0;
+}
+
+.nft{
+border:1px solid rgba(255,255,255,0.2);
+padding:10px;
+margin:10px 0;
 display:flex;
-justify-content:space-around;
-background:#050812;
-padding:12px 0;
-border-top:1px solid rgba(255,255,255,0.1);
-}
-.menu button{
-background:none;border:none;color:white;font-size:12px;
+justify-content:space-between;
+align-items:center;
 }
 
-.card{
-background:rgba(255,255,255,0.04);
-margin:10px;padding:15px;border-radius:16px;
-border:1px solid rgba(255,255,255,0.1);
-backdrop-filter:blur(10px);
+.nft img{
+width:60px;
+height:60px;
+border-radius:10px;
 }
 
-.hidden{display:none}
+/* Tap effect */
+.particle{
+position:absolute;
+width:6px;
+height:6px;
+background:white;
+border-radius:50%;
+pointer-events:none;
+animation:explode 1s linear forwards;
+}
+
+@keyframes explode{
+0%{opacity:1;transform:scale(1)}
+100%{opacity:0;transform:translate(var(--x),var(--y)) scale(0)}
+}
 </style>
 </head>
 
 <body>
-<div class="bg"></div>
 
-<div class="top">🪙 DarkCoin</div>
+<div class="skull-bg"></div>
 
-<!-- MAIN -->
-<div id="earnTab">
-<div class="hud">
-<div>Balance<br><b id="coins">0</b></div>
-<div>⚡ Energy<br><b id="energy">100</b></div>
-<div>Level<br><b id="level">1</b></div>
+<header>DARKCOIN</header>
+
+<div class="coin" id="coin"></div>
+
+<div class="balance" id="balance">Balance: 0 DC</div>
+
+<div class="buttons">
+<div class="btn" onclick="openMarket()">NFT MARKET</div>
+<div class="btn" onclick="fakeMine()">MINE</div>
 </div>
 
-<div class="coin">DC</div>
+<div class="market" id="market">
+<h2>NFT Marketplace (P2P)</h2>
 
-<button class="tap" onclick="tap()">Mine DarkCoin</button>
-</div>
-
-<!-- NFT MARKET -->
-<div id="nftTab" class="hidden">
-<div class="card">
-<h3>NFT Market</h3>
-<div class="card">
-Skull #001 - Price 1000 DC  
-<button onclick="buyNFT('Skull #001',1000)">Buy</button>
-</div>
-<div class="card">
-Golden Skull - Price 5000 DC  
-<button onclick="buyNFT('Golden Skull',5000)">Buy</button>
+<div class="nft">
+<img src="https://i.imgur.com/zv5sYqg.png">
+<span>Skull #001</span>
+<button onclick="buyNFT()">Buy 10 DC</button>
 </div>
 
-<h4>Your NFTs</h4>
-<div id="myNFTs"></div>
-</div>
-</div>
-
-<!-- PROFILE -->
-<div id="profileTab" class="hidden">
-<div class="card">
-<p id="username">User</p>
-</div>
+<div class="nft">
+<img src="https://i.imgur.com/zv5sYqg.png">
+<span>Dark Skull #777</span>
+<button onclick="buyNFT()">Buy 25 DC</button>
 </div>
 
-<!-- MENU -->
-<div class="menu">
-<button onclick="showTab('earnTab')">Earn</button>
-<button onclick="showTab('nftTab')">NFT</button>
-<button onclick="showTab('profileTab')">Profile</button>
+<div class="nft">
+<img src="https://i.imgur.com/zv5sYqg.png">
+<span>Ultra Skull #999</span>
+<button onclick="buyNFT()">Buy 100 DC</button>
+</div>
+
+<div class="btn" onclick="openMarket()">CLOSE</div>
 </div>
 
 <script>
-let tg = window.Telegram.WebApp;
-tg.expand();
+let balance = 0;
+const coin = document.getElementById("coin");
 
-/* DATA */
-let coins=+localStorage.getItem("coins")||0;
-let energy=+localStorage.getItem("energy")||100;
-let level=+localStorage.getItem("level")||1;
-let nfts=JSON.parse(localStorage.getItem("nfts")||"[]");
+coin.onclick = (e)=>{
+balance++;
+document.getElementById("balance").innerText="Balance: "+balance+" DC";
+tapParticles(e.clientX, e.clientY);
+coin.style.transform="scale(0.9)";
+setTimeout(()=>coin.style.transform="",100);
+};
 
-/* USER */
-if(tg.initDataUnsafe?.user){
-username.innerText="@"+tg.initDataUnsafe.user.username;
-}
-
-/* UI */
-function updateUI(){
-coinsEl.innerText=coins;
-energyEl.innerText=energy;
-levelEl.innerText=level;
-
-document.getElementById("coins").innerText=coins;
-document.getElementById("energy").innerText=energy;
-document.getElementById("level").innerText=level;
-
-localStorage.setItem("coins",coins);
-localStorage.setItem("energy",energy);
-localStorage.setItem("level",level);
-localStorage.setItem("nfts",JSON.stringify(nfts));
-
-let box=document.getElementById("myNFTs");
-box.innerHTML="";
-nfts.forEach(n=>box.innerHTML+="<p>• "+n+"</p>");
-}
-updateUI();
-
-/* TAP */
-function tap(){
-if(energy<=0)return;
-coins++;
-energy--;
-level=Math.floor(coins/1000)+1;
-updateUI();
-}
-
-/* ENERGY REGEN */
-setInterval(()=>{if(energy<100){energy++;updateUI();}},2000);
-
-/* NFT BUY */
-function buyNFT(name,price){
-if(coins>=price){
-coins-=price;
-nfts.push(name);
-updateUI();
-alert("NFT purchased: "+name);
+function tapParticles(x,y){
+for(let i=0;i<20;i++){
+let p=document.createElement("div");
+p.className="particle";
+p.style.left=x+"px";
+p.style.top=y+"px";
+p.style.setProperty("--x",(Math.random()*200-100)+"px");
+p.style.setProperty("--y",(Math.random()*200-100)+"px");
+document.body.appendChild(p);
+setTimeout(()=>p.remove(),1000);
 }
 }
 
-/* TABS */
-function showTab(id){
-document.querySelectorAll("body > div[id$='Tab']").forEach(t=>t.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
+function openMarket(){
+document.getElementById("market").classList.toggle("active");
+}
+
+function fakeMine(){
+balance+=10;
+alert("You mined 10 DarkCoin");
+document.getElementById("balance").innerText="Balance: "+balance+" DC";
+}
+
+function buyNFT(){
+alert("P2P trade simulation. Real blockchain later.");
 }
 </script>
 
