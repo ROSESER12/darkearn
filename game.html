@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DarkCoin</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
@@ -11,253 +11,109 @@
 body{
 background:#000;
 color:#fff;
+text-align:center;
 overflow:hidden;
 }
 
-/* Animated skull background */
-.bg{
-position:fixed;
-inset:0;
-background:url("https://raw.githubusercontent.com/ROSESER12/darkearn/main/skulls.png");
-opacity:0.05;
-animation:movebg 120s linear infinite;
-z-index:-3;
-}
-@keyframes movebg{
-0%{background-position:0 0}
-100%{background-position:5000px 5000px}
-}
-
-/* Neon glow overlay */
-.overlay{
+/* BACKGROUND GLOW */
+.bg-glow{
 position:fixed;inset:0;
-background:radial-gradient(circle at center,#111 0%,#000 70%);
+background:radial-gradient(circle at center,#00ffee20,#000 70%);
 z-index:-2;
 }
 
-/* Header */
+/* HEADER */
 header{
-position:fixed;
-top:0;width:100%;
-text-align:center;
-padding:14px;
-font-weight:800;
+padding:15px;
+font-size:20px;
+font-weight:bold;
 letter-spacing:3px;
-background:rgba(0,0,0,0.8);
 border-bottom:1px solid #222;
-backdrop-filter:blur(10px);
 }
 
-/* Main */
-.main{
-margin-top:90px;
-text-align:center;
-}
-
-/* Coin */
-.coin-wrap{
-width:220px;
-height:220px;
-margin:auto;
-perspective:800px;
+/* COIN */
+.coin-box{
+margin-top:60px;
+display:flex;
+flex-direction:column;
+align-items:center;
 }
 .coin{
-width:100%;
-height:100%;
+width:200px;height:200px;
 border-radius:50%;
-background:url("coin.png") center/cover no-repeat;
-box-shadow:0 0 40px #0ff, inset 0 0 40px #000;
-animation:spin 8s linear infinite;
+background:radial-gradient(circle,#111,#000);
+border:2px solid #444;
+box-shadow:0 0 40px #00ffee;
+display:flex;
+align-items:center;
+justify-content:center;
+animation:spin 10s linear infinite;
 }
+.coin img{
+width:80%;
+filter:drop-shadow(0 0 15px #00ffee);
+}
+
+/* SPIN */
 @keyframes spin{
 0%{transform:rotateY(0deg)}
 100%{transform:rotateY(360deg)}
 }
 
-/* Balance */
+/* BALANCE */
 .balance{
 margin-top:20px;
-font-size:28px;
-font-weight:700;
+font-size:22px;
+font-weight:bold;
 }
 
-/* Mine Button */
+/* BUTTON */
 .mine-btn{
-margin-top:30px;
-padding:18px 50px;
-font-size:18px;
-border-radius:40px;
+margin-top:20px;
+padding:15px 50px;
 border:none;
-background:linear-gradient(135deg,#00ffff,#8000ff);
-color:#000;
-font-weight:900;
-box-shadow:0 0 25px #00ffff;
-transition:0.2s;
+border-radius:30px;
+font-size:18px;
+font-weight:bold;
+color:black;
+background:linear-gradient(90deg,#00ffee,#00aaff,#aa00ff);
+box-shadow:0 0 30px #00ffee;
 }
 .mine-btn:active{transform:scale(0.95)}
-
-/* Menu */
-.menu{
-position:fixed;
-bottom:0;width:100%;
-display:flex;
-justify-content:space-around;
-background:rgba(0,0,0,0.9);
-border-top:1px solid #222;
-padding:10px;
-}
-.menu button{
-background:none;border:none;color:#777;font-size:12px;
-}
-.menu button.active{color:#0ff}
-
-/* Panels */
-.panel{
-display:none;
-padding:20px;
-}
-.panel.active{display:block}
-
-/* NFT Cards */
-.nft{
-background:#111;
-border:1px solid #222;
-padding:10px;
-border-radius:12px;
-margin:10px;
-}
-.nft button{
-margin-top:10px;
-padding:8px;
-width:100%;
-background:#0ff;border:none;font-weight:bold;
-}
-
-/* Particles */
-canvas{
-position:fixed;inset:0;z-index:-1;
-}
 </style>
 </head>
 
 <body>
-
-<div class="bg"></div>
-<div class="overlay"></div>
-<canvas id="particles"></canvas>
+<div class="bg-glow"></div>
 
 <header>DARKCOIN</header>
 
-<div class="main">
-
-<div class="coin-wrap">
-<div class="coin" id="coin"></div>
+<div class="coin-box">
+<div class="coin">
+<img src="https://i.imgur.com/6Xb6K4b.png">
 </div>
 
-<div class="balance">Balance: <span id="balance">0</span> DC</div>
+<div class="balance">Balance: <span id="coins">0</span> DC</div>
 
-<button class="mine-btn" onclick="mine()">MINE DARKCOIN</button>
-
-</div>
-
-<!-- PANELS -->
-<div id="nftPanel" class="panel">
-<h2>NFT MARKET</h2>
-<div class="nft">
-Skull Common<br>Price: 1000 DC<br>
-<button onclick="buyNFT('Common Skull',1000)">BUY</button>
-</div>
-<div class="nft">
-Skull Rare<br>Price: 5000 DC<br>
-<button onclick="buyNFT('Rare Skull',5000)">BUY</button>
-</div>
-<h3>Inventory</h3>
-<div id="inv"></div>
-</div>
-
-<div id="profilePanel" class="panel">
-<h2>Profile</h2>
-<p id="user"></p>
-<p>Level: <span id="level">1</span></p>
-</div>
-
-<!-- MENU -->
-<div class="menu">
-<button class="active" onclick="showPanel('main')">Mine</button>
-<button onclick="showPanel('nftPanel')">NFT</button>
-<button onclick="showPanel('profilePanel')">Profile</button>
+<button class="mine-btn" onclick="tap()">MINE DARKCOIN</button>
 </div>
 
 <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-/* DATA */
-let balance = +localStorage.balance || 0;
-let level = +localStorage.level || 1;
-let nfts = JSON.parse(localStorage.nfts || "[]");
+let coins = Number(localStorage.getItem("coins")) || 0;
 
-/* USER */
-if(tg.initDataUnsafe?.user){
-document.getElementById("user").innerText="@"+tg.initDataUnsafe.user.username;
-}
-
-/* UI */
 function update(){
-balanceEl.innerText = balance;
-document.getElementById("balance").innerText = balance;
-document.getElementById("level").innerText = level;
-localStorage.balance = balance;
-localStorage.level = level;
-localStorage.nfts = JSON.stringify(nfts);
-inv.innerHTML="";
-nfts.forEach(n=>inv.innerHTML+="<div>"+n+"</div>");
+document.getElementById("coins").innerText = coins;
+localStorage.setItem("coins", coins);
 }
 update();
 
-/* Mine */
-function mine(){
-balance += 1;
-level = Math.floor(balance/1000)+1;
-document.getElementById("coin").style.transform="scale(0.9)";
-setTimeout(()=>coin.style.transform="",100);
+function tap(){
+coins++;
 update();
 }
-
-/* NFT */
-function buyNFT(name,price){
-if(balance>=price){
-balance-=price;
-nfts.push(name);
-update();
-}
-}
-
-/* Panels */
-function showPanel(id){
-document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-if(id!="main")document.getElementById(id).classList.add("active");
-document.querySelectorAll(".menu button").forEach(b=>b.classList.remove("active"));
-event.target.classList.add("active");
-}
-
-/* PARTICLES */
-const c=document.getElementById("particles");
-const ctx=c.getContext("2d");
-c.width=innerWidth;c.height=innerHeight;
-let p=[];
-for(let i=0;i<150;i++)p.push({x:Math.random()*c.width,y:Math.random()*c.height,s:Math.random()*2});
-function draw(){
-ctx.clearRect(0,0,c.width,c.height);
-ctx.fillStyle="#0ff";
-p.forEach(o=>{
-ctx.fillRect(o.x,o.y,o.s,o.s);
-o.y+=0.2;
-if(o.y>c.height)o.y=0;
-});
-requestAnimationFrame(draw);
-}
-draw();
 </script>
 
 </body>
