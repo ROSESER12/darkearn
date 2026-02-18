@@ -73,10 +73,27 @@ font-size:14px;
 }
 .menu div{cursor:pointer;opacity:.6}
 .menu div:hover{opacity:1}
+<div onclick="show('exchangeScreen')">Exchange</div>
+<div onclick="show('leaderScreen')">Top</div>
 
 /* SCREENS */
 .screen{display:none;padding:20px}
 .active{display:block}
+<div class="screen" id="exchangeScreen">
+<h2>EXCHANGE</h2>
+<p>DC Price: <span id="price">0.01</span></p>
+<button onclick="alert('Coming soon')">Swap DC → USDT</button>
+</div>
+
+<div class="screen" id="leaderScreen">
+<h2>LEADERBOARD</h2>
+<table>
+<tr><th>User</th><th>DC</th></tr>
+<tr><td>You</td><td id="lb1">0</td></tr>
+<tr><td>Player2</td><td>523</td></tr>
+<tr><td>Player3</td><td>331</td></tr>
+</table>
+</div>
 
 /* TABLE */
 table{
@@ -169,10 +186,14 @@ alert("Not enough DC");
 }
 
 function update(){
+function update(){
 document.getElementById("balance").innerText=coins+" DC";
 document.getElementById("pbal").innerText=coins;
 document.getElementById("total").innerText=total;
 document.getElementById("lvl").innerText=level;
+document.getElementById("lb1").innerText=coins;
+save();
+}
 }
 
 function show(id){
@@ -205,6 +226,27 @@ drops[i]++;
 }
 }
 setInterval(draw,50);
+// SAVE DATA
+function save(){
+localStorage.setItem("darkcoin",JSON.stringify({coins,total,level}));
+}
+function load(){
+let d=JSON.parse(localStorage.getItem("darkcoin"));
+if(d){
+coins=d.coins;
+total=d.total;
+level=d.level;
+update();
+}
+}
+load();
+
+// Fake price
+let price=0.01;
+setInterval(()=>{
+price += (Math.random()-0.5)*0.001;
+document.getElementById("price").innerText=price.toFixed(4)+" USDT";
+},2000);
 </script>
 
 </body>
