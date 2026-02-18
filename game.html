@@ -1,200 +1,177 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DarkCoin</title>
 
 <style>
-body {
-    margin:0;
-    font-family: Arial, sans-serif;
-    background:black;
-    color:white;
-    overflow:hidden;
+*{margin:0;padding:0;box-sizing:border-box;font-family:Inter,Arial;}
+body{
+background:black;
+color:white;
+overflow:hidden;
 }
 
-/* Matrix background */
-canvas{
-    position:fixed;
-    top:0;left:0;
-    z-index:-1;
+/* Background animated grid */
+.bg{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:linear-gradient(90deg,#111 1px,transparent 1px),
+linear-gradient(#111 1px,transparent 1px);
+background-size:40px 40px;
+animation:bgmove 20s linear infinite;
+z-index:-2;
 }
+@keyframes bgmove{from{background-position:0 0;}to{background-position:400px 400px;}}
 
 /* Header */
 header{
-    text-align:center;
-    font-size:22px;
-    letter-spacing:4px;
-    padding:12px;
-    border-bottom:1px solid white;
+text-align:center;
+font-size:26px;
+font-weight:700;
+letter-spacing:4px;
+padding:14px;
+border-bottom:1px solid #333;
 }
 
-/* Main coin */
+/* Coin */
 .coin{
-    width:180px;
-    height:180px;
-    border-radius:50%;
-    border:3px solid white;
-    margin:40px auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
-    animation:glow 2s infinite alternate, spin 12s linear infinite;
+width:200px;height:200px;
+border-radius:50%;
+border:2px solid white;
+margin:40px auto;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:600;
+animation:spin 15s linear infinite, glow 2s ease-in-out infinite alternate;
 }
+@keyframes spin{from{transform:rotateY(0);}to{transform:rotateY(360deg);}}
+@keyframes glow{from{box-shadow:0 0 10px white;}to{box-shadow:0 0 40px white;}}
 
 /* Buttons */
-button{
-    background:black;
-    border:1px solid white;
-    color:white;
-    padding:12px 30px;
-    font-size:14px;
-    cursor:pointer;
-    margin:8px;
+.btn{
+padding:14px 36px;
+border:1px solid white;
+background:black;
+color:white;
+cursor:pointer;
+font-size:14px;
+margin:6px;
+transition:0.2s;
 }
-button:hover{
-    background:white;
-    color:black;
-}
+.btn:hover{background:white;color:black;}
+
+/* Panels */
+.panel{display:none;padding:20px;}
+.active{display:block;}
 
 /* Tabs */
 nav{
-    position:fixed;
-    bottom:0;
-    width:100%;
-    display:flex;
-    border-top:1px solid white;
+position:fixed;
+bottom:0;
+width:100%;
+display:flex;
+border-top:1px solid #333;
+background:black;
 }
 nav button{
-    flex:1;
-    border:none;
-    border-right:1px solid white;
-    padding:14px;
+flex:1;
+padding:14px;
+border:none;
+border-right:1px solid #333;
+background:black;
+color:white;
 }
 
-/* Panels */
-.panel{
-    display:none;
-    padding:20px;
-}
-.panel.active{
-    display:block;
-}
-
-/* Table */
-table{
-    width:100%;
-    border-collapse:collapse;
-}
-td,th{
-    border:1px solid white;
-    padding:8px;
-}
-
-/* Animations */
-@keyframes glow{
-    from{box-shadow:0 0 10px white;}
-    to{box-shadow:0 0 40px white;}
-}
-@keyframes spin{
-    from{transform:rotateY(0deg);}
-    to{transform:rotateY(360deg);}
-}
+/* Tables */
+table{width:100%;border-collapse:collapse;}
+td,th{border:1px solid white;padding:8px;text-align:center;}
 </style>
 </head>
 
 <body>
 
-<canvas id="matrix"></canvas>
+<div class="bg"></div>
 
 <header>DARKCOIN</header>
 
-<div id="minePanel" class="panel active">
-    <div class="coin" id="coin">0 DC</div>
-    <div style="text-align:center;">
-        <button onclick="mine()">MINE DARKCOIN</button>
-    </div>
+<!-- MINE -->
+<div id="mine" class="panel active">
+<div class="coin" id="coin">0 DC</div>
+<center>
+<button class="btn" onclick="mine()">MINE</button>
+<button class="btn" onclick="autoMine()">BUY AUTO MINER (50 DC)</button>
+</center>
 </div>
 
-<div id="marketPanel" class="panel">
-    <h2>NFT Market</h2>
-    <table>
-        <tr><th>NFT</th><th>Price DC</th><th>Buy</th></tr>
-        <tr><td>Skull NFT</td><td>10</td><td><button onclick="buy(10)">BUY</button></td></tr>
-        <tr><td>Dark Badge</td><td>25</td><td><button onclick="buy(25)">BUY</button></td></tr>
-        <tr><td>Cyber King</td><td>50</td><td><button onclick="buy(50)">BUY</button></td></tr>
-    </table>
+<!-- MARKET -->
+<div id="market" class="panel">
+<h2>NFT MARKET</h2><br>
+<table>
+<tr><th>NFT</th><th>Price</th><th>Action</th></tr>
+<tr><td>Skull Genesis</td><td>10 DC</td><td><button class="btn" onclick="buyNFT(10)">BUY</button></td></tr>
+<tr><td>Dark Crown</td><td>50 DC</td><td><button class="btn" onclick="buyNFT(50)">BUY</button></td></tr>
+<tr><td>Cyber Emperor</td><td>200 DC</td><td><button class="btn" onclick="buyNFT(200)">BUY</button></td></tr>
+</table>
 </div>
 
-<div id="profilePanel" class="panel">
-    <h2>Profile</h2>
-    <p>Balance: <span id="balance">0</span> DC</p>
-    <p>NFT Owned: <span id="nfts">0</span></p>
+<!-- PROFILE -->
+<div id="profile" class="panel">
+<h2>PROFILE</h2><br>
+Balance: <span id="bal">0</span> DC<br><br>
+NFT Owned: <span id="nft">0</span><br><br>
+Level: <span id="lvl">1</span><br>
 </div>
 
 <nav>
-    <button onclick="show('minePanel')">Mine</button>
-    <button onclick="show('marketPanel')">Market</button>
-    <button onclick="show('profilePanel')">Profile</button>
+<button onclick="tab('mine')">Mine</button>
+<button onclick="tab('market')">Market</button>
+<button onclick="tab('profile')">Profile</button>
 </nav>
 
 <script>
 let dc = 0;
 let nft = 0;
+let level = 1;
+let auto = false;
 
 function mine(){
-    dc++;
-    update();
+ dc += level;
+ update();
 }
 
-function buy(price){
-    if(dc >= price){
-        dc -= price;
-        nft++;
-        alert("NFT Purchased!");
-        update();
-    } else {
-        alert("Not enough DarkCoin");
-    }
+function autoMine(){
+ if(dc >= 50 && !auto){
+   dc -= 50;
+   auto = true;
+   setInterval(()=>{dc += level; update();}, 1000);
+   alert("Auto miner activated");
+ }
+}
+
+function buyNFT(price){
+ if(dc >= price){
+   dc -= price;
+   nft++;
+   level++;
+   alert("NFT Purchased. Level UP!");
+   update();
+ } else alert("Not enough DarkCoin");
 }
 
 function update(){
-    document.getElementById("coin").innerHTML = dc + " DC";
-    document.getElementById("balance").innerHTML = dc;
-    document.getElementById("nfts").innerHTML = nft;
+ document.getElementById("coin").innerHTML = dc + " DC";
+ document.getElementById("bal").innerHTML = dc;
+ document.getElementById("nft").innerHTML = nft;
+ document.getElementById("lvl").innerHTML = level;
 }
 
-function show(id){
-    document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+function tab(id){
+ document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
 }
-
-/* Matrix background */
-const c = document.getElementById("matrix");
-const ctx = c.getContext("2d");
-c.width = window.innerWidth;
-c.height = window.innerHeight;
-
-const letters = "DARKCOIN101010";
-const font = 16;
-const cols = c.width / font;
-const drops = Array.from({length:cols}).fill(1);
-
-function draw(){
-    ctx.fillStyle="rgba(0,0,0,0.05)";
-    ctx.fillRect(0,0,c.width,c.height);
-    ctx.fillStyle="white";
-    ctx.font=font+"px monospace";
-    drops.forEach((y,i)=>{
-        const text = letters[Math.floor(Math.random()*letters.length)];
-        ctx.fillText(text,i*font,y*font);
-        if(y*font > c.height && Math.random()>0.975) drops[i]=0;
-        drops[i]++;
-    });
-}
-setInterval(draw,50);
 </script>
 
 </body>
