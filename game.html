@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,161 +9,221 @@
 <style>
 body{
 margin:0;
+font-family:monospace;
 background:#000;
 color:#fff;
-font-family:Arial,Helvetica,sans-serif;
 text-align:center;
 overflow:hidden;
 }
 
-/* HEADER */
-.header{
+/* background skulls */
+.skull{
 position:fixed;
-top:0;
-width:100%;
-padding:15px;
+font-size:40px;
+opacity:0.07;
+animation:float 20s linear infinite;
+}
+@keyframes float{
+from{transform:translateY(120vh) rotate(0deg)}
+to{transform:translateY(-20vh) rotate(360deg)}
+}
+
+/* UI */
+.top{
 font-size:28px;
-font-weight:bold;
-background:#000;
+padding:15px;
 border-bottom:1px solid #fff;
-letter-spacing:3px;
-z-index:10;
 }
 
-/* BACKGROUND SKULLS */
-canvas{
-position:fixed;
-top:0;
-left:0;
-z-index:-1;
-}
-
-/* CARD */
 .card{
-margin-top:100px;
-padding:20px;
-}
-
-/* BALANCE */
-.balance{
-font-size:48px;
-margin:20px 0;
-}
-
-/* BUTTON */
-.mine{
-padding:20px 40px;
-font-size:22px;
-background:#000;
-color:#fff;
-border:2px solid #fff;
+border:1px solid #fff;
+margin:10px;
+padding:15px;
 border-radius:12px;
-box-shadow:0 0 25px #fff;
-transition:0.2s;
-}
-.mine:active{
-transform:scale(0.95);
-box-shadow:0 0 50px #fff;
+background:#000;
+box-shadow:0 0 20px rgba(255,255,255,0.15);
 }
 
-/* MENU */
+button{
+background:#000;
+border:1px solid #fff;
+color:#fff;
+padding:15px;
+margin:5px;
+width:90%;
+font-size:16px;
+}
+
+button:active{
+transform:scale(0.95);
+background:#111;
+}
+
 .menu{
 position:fixed;
 bottom:0;
 width:100%;
 display:flex;
-justify-content:space-around;
 background:#000;
 border-top:1px solid #fff;
-padding:10px;
 }
 .menu button{
-background:none;
-border:none;
-color:#fff;
-font-size:14px;
+font-size:12px;
+padding:10px;
 }
-
-/* HIDDEN */
 .hidden{display:none}
 </style>
 </head>
 
 <body>
 
-<div class="header">DARKCOIN</div>
+<div class="top">☠ DARKCOIN ☠</div>
 
-<canvas id="bg"></canvas>
+<!-- EARN -->
+<div id="earn" class="card">
+<h3>Баланс</h3>
+<h1 id="coins">0</h1>
+<p>Энергия: <span id="energy">100</span></p>
+<button onclick="mine()">МАЙНИТЬ</button>
+</div>
 
-<div class="card">
-<div>Balance</div>
-<div class="balance" id="coins">0</div>
-<button class="mine" onclick="mine()">MINE DARKCOIN</button>
+<!-- UPGRADES -->
+<div id="upgrades" class="card hidden">
+<h3>Прокачка</h3>
+<p>Сила: <span id="power">1</span></p>
+<p>Фарм: <span id="farm">0</span>/сек</p>
+<button onclick="buyPower()">+Сила (50)</button>
+<button onclick="buyFarm()">+Фарм (200)</button>
+</div>
+
+<!-- NFT -->
+<div id="nft" class="card hidden">
+<h3>NFT MARKET</h3>
+<button onclick="buyNFT('Skull',500)">Skull 500</button>
+<button onclick="buyNFT('Black Skull',2000)">Black Skull 2000</button>
+
+<h4>Инвентарь</h4>
+<div id="inventory"></div>
+</div>
+
+<!-- MARKET -->
+<div id="market" class="card hidden">
+<h3>Рынок игроков</h3>
+<p>Скоро: продажа NFT между игроками</p>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="card hidden">
+<h3>Профиль</h3>
+<p id="username"></p>
+<p>Level: <span id="level">1</span></p>
 </div>
 
 <div class="menu">
-<button onclick="show('mineTab')">Mine</button>
-<button onclick="show('upTab')">Upgrade</button>
-<button onclick="show('walletTab')">Wallet</button>
+<button onclick="tab('earn')">Mine</button>
+<button onclick="tab('upgrades')">Up</button>
+<button onclick="tab('nft')">NFT</button>
+<button onclick="tab('market')">Market</button>
+<button onclick="tab('profile')">Me</button>
 </div>
 
 <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-/* DATA */
-let coins = +localStorage.getItem("coins") || 0;
-let power = +localStorage.getItem("power") || 1;
+/* USER */
+let user = tg.initDataUnsafe?.user;
+if(user){
+username.innerText="@"+user.username;
+}
 
+/* DATA */
+let coins=+localStorage.getItem("coins")||0;
+let energy=+localStorage.getItem("energy")||100;
+let power=+localStorage.getItem("power")||1;
+let farm=+localStorage.getItem("farm")||0;
+let level=+localStorage.getItem("level")||1;
+let nft=JSON.parse(localStorage.getItem("nft")||"[]");
+
+/* UI */
 function save(){
 localStorage.setItem("coins",coins);
+localStorage.setItem("energy",energy);
 localStorage.setItem("power",power);
+localStorage.setItem("farm",farm);
+localStorage.setItem("level",level);
+localStorage.setItem("nft",JSON.stringify(nft));
 }
 
 function update(){
-document.getElementById("coins").innerText = coins;
+coinsEl.innerText=coins;
+document.getElementById("coins").innerText=coins;
+document.getElementById("energy").innerText=energy;
+document.getElementById("power").innerText=power;
+document.getElementById("farm").innerText=farm;
+document.getElementById("level").innerText=level;
+
+let inv="";
+nft.forEach(n=>inv+="☠ "+n+"<br>");
+inventory.innerHTML=inv;
+
 save();
 }
 update();
 
 /* MINE */
 function mine(){
-coins += power;
+if(energy<=0) return;
+coins+=power;
+energy--;
+level=Math.floor(coins/1000)+1;
 update();
 }
 
-/* SKULL ANIMATION */
-const canvas=document.getElementById("bg");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
+/* AUTO FARM */
+setInterval(()=>{
+coins+=farm;
+update();
+},1000);
 
-let skulls=[];
-for(let i=0;i<40;i++){
-skulls.push({
-x:Math.random()*canvas.width,
-y:Math.random()*canvas.height,
-size:20+Math.random()*40,
-speed:0.2+Math.random()*1
-});
+/* ENERGY */
+setInterval(()=>{
+if(energy<100){energy++;update();}
+},3000);
+
+/* UPGRADES */
+function buyPower(){
+if(coins>=50){coins-=50;power++;update();}
+}
+function buyFarm(){
+if(coins>=200){coins-=200;farm++;update();}
 }
 
-function draw(){
-ctx.clearRect(0,0,canvas.width,canvas.height);
-
-ctx.fillStyle="#fff";
-ctx.font="30px Arial";
-
-skulls.forEach(s=>{
-ctx.globalAlpha=0.15;
-ctx.fillText("💀",s.x,s.y);
-s.y+=s.speed;
-if(s.y>canvas.height) s.y=-20;
-});
-
-requestAnimationFrame(draw);
+/* NFT */
+function buyNFT(name,price){
+if(coins>=price){
+coins-=price;
+nft.push(name);
+update();
 }
-draw();
+}
+
+/* TABS */
+function tab(id){
+document.querySelectorAll(".card").forEach(e=>e.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+}
+
+/* SKULL BACKGROUND */
+for(let i=0;i<25;i++){
+let s=document.createElement("div");
+s.className="skull";
+s.innerHTML="☠";
+s.style.left=Math.random()*100+"vw";
+s.style.fontSize=(20+Math.random()*50)+"px";
+s.style.animationDuration=(10+Math.random()*20)+"s";
+document.body.appendChild(s);
+}
 </script>
 
 </body>
