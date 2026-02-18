@@ -1,150 +1,107 @@
-> Lancet:
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DarkCoin</title>
-
+<title>DarkCoin GOD MODE</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
 *{box-sizing:border-box}
 body{
 margin:0;
-font-family:Inter,Arial;
+font-family:Consolas,monospace;
 background:#000;
-color:#fff;
+color:#0f0;
 text-align:center;
 overflow:hidden;
 }
 
+/* MATRIX BACKGROUND */
+canvas{position:fixed;inset:0;z-index:-3}
+
 /* TOP BAR */
 .topbar{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-padding:12px;
-background:#000;
-border-bottom:1px solid rgba(255,255,255,0.15);
-font-size:22px;
-font-weight:bold;
-z-index:1000;
-letter-spacing:2px;
+position:fixed;top:0;width:100%;
+background:#000;border-bottom:1px solid #0f0;
+padding:10px;font-size:20px;font-weight:bold;
+z-index:999
 }
 
-/* Animated skull background */
-.skull-bg{
-position:fixed;
-inset:0;
-z-index:-2;
-overflow:hidden;
+/* GLITCH TEXT */
+.glitch{
+font-size:26px;
+position:relative;
+color:#0f0;
+}
+.glitch::before,.glitch::after{
+content:attr(data-text);
+position:absolute;left:0;top:0;
+opacity:0.7;
+}
+.glitch::before{color:#f00;left:2px;animation:glitch 2s infinite}
+.glitch::after{color:#0ff;left:-2px;animation:glitch 3s infinite}
+@keyframes glitch{
+0%{clip-path:inset(0 0 90% 0)}
+50%{clip-path:inset(40% 0 40% 0)}
+100%{clip-path:inset(90% 0 0 0)}
 }
 
-.skull{
-position:absolute;
-width:60px;
-opacity:0.08;
-animation:float 20s linear infinite;
-}
-
-@keyframes float{
-from{transform:translateY(120vh) rotate(0deg);}
-to{transform:translateY(-120vh) rotate(360deg);}
-}
-
-/* Glass cards */
+/* CARDS */
 .card{
-background:rgba(255,255,255,0.03);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.15);
-border-radius:18px;
-padding:18px;
-margin:12px;
+background:rgba(0,0,0,0.8);
+border:1px solid #0f0;
+padding:15px;margin:10px;border-radius:12px;
+box-shadow:0 0 20px #0f0;
 }
 
-/* TAP button */
+/* BUTTONS */
 .tap{
-width:100%;
-padding:22px;
-font-size:24px;
-font-weight:bold;
-border:none;
-border-radius:14px;
-background:#111;
-color:white;
-border:1px solid white;
-box-shadow:0 0 30px rgba(255,255,255,0.25);
-transition:0.1s;
-animation:pulse 2s infinite;
+width:100%;padding:20px;font-size:20px;
+background:#000;border:1px solid #0f0;color:#0f0;
+box-shadow:0 0 30px #0f0;
+animation:pulse 1.5s infinite;
 }
 .tap:active{transform:scale(0.95)}
+@keyframes pulse{0%{box-shadow:0 0 10px #0f0}50%{box-shadow:0 0 40px #0f0}100%{box-shadow:0 0 10px #0f0}}
 
-@keyframes pulse{
-0%{box-shadow:0 0 10px white;}
-50%{box-shadow:0 0 40px white;}
-100%{box-shadow:0 0 10px white;}
-}
-
-/* Buttons */
 .btn{
-padding:10px 16px;
-border-radius:10px;
-border:1px solid white;
-background:none;
-color:white;
-margin:5px;
+padding:10px;border:1px solid #0f0;background:#000;color:#0f0;margin:5px;
 }
 
-/* Bottom menu */
+/* MENU */
 .menu{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-display:flex;
-justify-content:space-around;
-background:#000;
-padding:8px;
-border-top:1px solid rgba(255,255,255,0.15);
+position:fixed;bottom:0;width:100%;
+display:flex;justify-content:space-around;
+background:#000;border-top:1px solid #0f0;padding:5px;
 }
-.menu button{
-background:none;
-border:none;
-color:white;
-font-size:12px;
-}
+.menu button{background:none;border:none;color:#0f0;font-size:12px}
 
 .hidden{display:none}
 
-/* NFT */
-.nft{
-border:1px solid white;
-border-radius:14px;
-padding:10px;
-margin:8px;
-background:#050505;
+/* TERMINAL */
+.terminal{
+text-align:left;
+font-size:12px;
+max-height:150px;
+overflow:auto;
 }
 </style>
 </head>
 
 <body>
 
-<!-- SKULL BACKGROUND -->
-<div class="skull-bg" id="skulls"></div>
+<canvas id="matrix"></canvas>
 
-<!-- TOP BAR -->
-<div class="topbar">🪙 DARKCOIN</div>
-
+<div class="topbar glitch" data-text="DARKCOIN GOD MODE">DARKCOIN GOD MODE</div>
 <br><br><br>
 
 <!-- EARN -->
 <div id="earnTab" class="tab">
 <div class="card">
-<h3>DarkCoin Balance</h3>
+<h3>Balance</h3>
 <h1 id="coins">0</h1>
-<p>⚡ Energy: <span id="energy">100</span>/100</p>
+<p>Energy: <span id="energy">100</span></p>
 <button class="tap" onclick="tap()">MINE DARKCOIN</button>
 </div>
 </div>
@@ -153,82 +110,54 @@ background:#050505;
 <div id="upgradeTab" class="tab hidden">
 <div class="card">
 <h3>Upgrades</h3>
-<p>Tap Power: <span id="power">1</span></p>
+<p>Power: <span id="power">1</span></p>
 <p>Auto Farm: <span id="farm">0</span>/sec</p>
-<button class="btn" onclick="upgradePower()">Upgrade Power (50)</button>
-<button class="btn" onclick="upgradeFarm()">Upgrade Farm (200)</button>
+<button class="btn" onclick="upgradePower()">Power +1 (50)</button>
+<button class="btn" onclick="upgradeFarm()">Farm +1 (200)</button>
 </div>
 </div>
 
-<!-- TASKS -->
-<div id="tasksTab" class="tab hidden">
+<!-- WALLET -->
+<div id="walletTab" class="tab hidden">
 <div class="card">
-<h3>Tasks</h3>
-<button class="btn" onclick="daily()">Daily Reward</button>
-<button class="btn" onclick="taskReward()">Join Channel Reward</button>
+<h3>Wallet</h3>
+<p>Balance: <span id="coins2">0</span> DC</p>
+<p>Status: Connected (Fake)</p>
+<button class="btn" onclick="alert('Withdraw coming soon')">Withdraw</button>
 </div>
 </div>
 
-<!-- FRIENDS -->
-<div id="friendsTab" class="tab hidden">
+<!-- NFT -->
+<div id="nftTab" class="tab hidden">
 <div class="card">
-<h3>Referral</h3>
-<p id="refLink"></p>
+<h3>NFT MARKET</h3>
+<button class="btn" onclick="buyNFT('Common Skull',1000)">Common Skull (1000)</button>
+<button class="btn" onclick="buyNFT('Rare Skull',5000)">Rare Skull (5000)</button>
+<button class="btn" onclick="buyNFT('Legendary Skull',20000)">Legendary Skull (20000)</button>
+<h4>Inventory</h4>
+<div id="myNFTs"></div>
 </div>
 </div>
 
-<!-- LEADERBOARD -->
-<div id="leaderTab" class="tab hidden">
-<div class="card">
-<h3>Leaderboard</h3>
-<p>1 DarkWhale — 9999999</p>
-<p>2 SkullMiner — 5000000</p>
-<p>3 You — <span id="coins2">0</span></p>
-</div>
+<!-- TERMINAL -->
+<div id="terminalTab" class="tab hidden">
+<div class="card terminal" id="terminalLog"></div>
 </div>
 
 <!-- PROFILE -->
 <div id="profileTab" class="tab hidden">
 <div class="card">
-<h3>Profile</h3>
-<p id="username">Loading...</p>
+<p id="username"></p>
 <p>Level: <span id="level">1</span></p>
 </div>
 </div>
 
-<!-- NFT MARKET -->
-<div id="nftTab" class="tab hidden">
-<div class="card">
-<h3>NFT Market</h3>
-
-<div class="nft">
-<p>💀 Genesis Skull NFT</p>
-<p>Price: 1000</p>
-<button class="btn" onclick="buyNFT('Genesis Skull',1000)">Buy</button>
-</div>
-
-<div class="nft">
-<p>☠ Void Skull NFT</p>
-<p>Price: 5000</p>
-<button class="btn" onclick="buyNFT('Void Skull',5000)">Buy</button>
-</div>
-
-<h4>Your NFTs</h4>
-<div id="myNFTs"></div>
-
-</div>
-</div>
-
-<!-- MENU -->
 <div class="menu">
-<button onclick="showTab('earnTab')">Earn</button>
-
-> Lancet:
-<button onclick="showTab('upgradeTab')">Upgrades</button>
-<button onclick="showTab('tasksTab')">Tasks</button>
-<button onclick="showTab('friendsTab')">Friends</button>
-<button onclick="showTab('leaderTab')">Top</button>
+<button onclick="showTab('earnTab')">Mine</button>
+<button onclick="showTab('upgradeTab')">Up</button>
+<button onclick="showTab('walletTab')">Wallet</button>
 <button onclick="showTab('nftTab')">NFT</button>
+<button onclick="showTab('terminalTab')">Terminal</button>
 <button onclick="showTab('profileTab')">Profile</button>
 </div>
 
@@ -237,31 +166,29 @@ let tg = window.Telegram.WebApp;
 tg.expand();
 
 /* DATA */
-let coins = +localStorage.getItem("coins") || 0;
-let power = +localStorage.getItem("power") || 1;
-let farm = +localStorage.getItem("farm") || 0;
-let energy = +localStorage.getItem("energy") || 100;
-let level = +localStorage.getItem("level") || 1;
-let nfts = JSON.parse(localStorage.getItem("nfts") || "[]");
+let coins=+localStorage.getItem("coins")||0;
+let power=+localStorage.getItem("power")||1;
 
-/* Telegram user */
+> Lancet:
+let farm=+localStorage.getItem("farm")||0;
+let energy=+localStorage.getItem("energy")||100;
+let level=+localStorage.getItem("level")||1;
+let nfts=JSON.parse(localStorage.getItem("nfts")||"[]");
+
+/* USER */
 if(tg.initDataUnsafe?.user){
-username.innerText = "@"+tg.initDataUnsafe.user.username;
-refLink.innerText = "https://t.me/DarkEarnBot?start="+tg.initDataUnsafe.user.id;
+username.innerText="@"+tg.initDataUnsafe.user.username;
 }
 
 /* UI */
 function updateUI(){
-coins2.innerText = coins;
-coinsEl = coins;
-coins2.innerText = coins;
-coinsEl = coins;
-document.getElementById("coins").innerText = coins;
-document.getElementById("coins2").innerText = coins;
-document.getElementById("power").innerText = power;
-document.getElementById("farm").innerText = farm;
-document.getElementById("energy").innerText = energy;
-document.getElementById("level").innerText = level;
+coinsEl=coins;
+coins2.innerText=coins;
+document.getElementById("coins").innerText=coins;
+document.getElementById("power").innerText=power;
+document.getElementById("farm").innerText=farm;
+document.getElementById("energy").innerText=energy;
+document.getElementById("level").innerText=level;
 
 localStorage.setItem("coins",coins);
 localStorage.setItem("power",power);
@@ -271,7 +198,7 @@ localStorage.setItem("level",level);
 localStorage.setItem("nfts",JSON.stringify(nfts));
 
 myNFTs.innerHTML="";
-nfts.forEach(n=>myNFTs.innerHTML+="<p>• "+n+"</p>");
+nfts.forEach(n=>myNFTs.innerHTML+="<p>"+n+"</p>");
 }
 updateUI();
 
@@ -282,26 +209,18 @@ coins+=power;
 energy--;
 level=Math.floor(coins/1000)+1;
 updateUI();
+logTerminal("Mined "+power+" DC");
 }
 
-/* Energy regen */
-setInterval(()=>{ if(energy<100){energy++;updateUI();}},2000);
+/* ENERGY */
+setInterval(()=>{if(energy<100){energy++;updateUI();}},2000);
 
-/* Auto farm */
-setInterval(()=>{ coins+=farm;updateUI();},1000);
+/* AUTO FARM */
+setInterval(()=>{coins+=farm;updateUI();},1000);
 
-/* Upgrades */
-function upgradePower(){ if(coins>=50){coins-=50;power++;updateUI();}}
-function upgradeFarm(){ if(coins>=200){coins-=200;farm++;updateUI();}}
-
-/* Daily */
-function daily(){
-let last=localStorage.getItem("daily");
-if(!last||Date.now()-last>86400000){coins+=1000;localStorage.setItem("daily",Date.now());updateUI();}
-}
-
-/* Task */
-function taskReward(){coins+=500;updateUI();}
+/* UPGRADES */
+function upgradePower(){if(coins>=50){coins-=50;power++;updateUI();}}
+function upgradeFarm(){if(coins>=200){coins-=200;farm++;updateUI();}}
 
 /* NFT */
 function buyNFT(name,price){
@@ -309,26 +228,44 @@ if(coins>=price){
 coins-=price;
 nfts.push(name);
 updateUI();
-alert("NFT Minted: "+name);
+logTerminal("NFT minted: "+name);
 }
 }
 
-/* Tabs */
+/* TERMINAL LOG */
+function logTerminal(msg){
+let t=document.getElementById("terminalLog");
+t.innerHTML+="<div>> "+msg+"</div>";
+t.scrollTop=t.scrollHeight;
+}
+
+/* TABS */
 function showTab(id){
 document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 
-/* Generate floating skulls */
-for(let i=0;i<20;i++){
-let s=document.createElement("img");
-s.src="https://i.imgur.com/8QfQ5xO.png"; // skull png
-s.className="skull";
-s.style.left=Math.random()*100+"%";
-s.style.animationDuration=(10+Math.random()*20)+"s";
-s.style.width=(30+Math.random()*80)+"px";
-document.getElementById("skulls").appendChild(s);
+/* MATRIX BACKGROUND */
+const canvas=document.getElementById("matrix");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth;canvas.height=innerHeight;
+const letters="01";
+const font=16;
+const cols=canvas.width/font;
+const drops=Array(cols).fill(1);
+function drawMatrix(){
+ctx.fillStyle="rgba(0,0,0,0.05)";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+ctx.fillStyle="#0f0";
+ctx.font=font+"px monospace";
+for(let i=0;i<drops.length;i++){
+let text=letters[Math.floor(Math.random()*letters.length)];
+ctx.fillText(text,i*font,drops[i]*font);
+if(drops[i]*font>canvas.height&&Math.random()>0.975)drops[i]=0;
+drops[i]++;
 }
+}
+setInterval(drawMatrix,33);
 </script>
 
 </body>
