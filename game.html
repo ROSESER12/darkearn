@@ -3,213 +3,290 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DarkEarn PRO</title>
+<title>DarkEarn Black Edition</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <style>
+*{box-sizing:border-box}
 body{
 margin:0;
-font-family:Arial;
-background:#060b1a;
-color:white;
+font-family:Inter,Arial;
+background:#000;
+color:#fff;
 text-align:center;
+overflow:hidden;
 }
 
-/* Glass card */
+/* Premium background */
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at 20% 20%, #ffffff10, transparent),
+radial-gradient(circle at 80% 80%, #ffffff05, transparent);
+z-index:-1;
+}
+
+/* Glass cards */
 .card{
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(15px);
-border-radius:20px;
-padding:20px;
-margin:10px;
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:0 0 20px rgba(0,255,255,0.15);
+background:rgba(255,255,255,0.03);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.15);
+border-radius:18px;
+padding:18px;
+margin:12px;
 }
 
 /* Tap button */
 .tap{
 width:100%;
-padding:25px;
-border:none;
-border-radius:15px;
+padding:22px;
 font-size:24px;
 font-weight:bold;
-background:linear-gradient(135deg,#8a2be2,#00ffff);
+border:none;
+border-radius:14px;
+background:#111;
 color:white;
-box-shadow:0 0 20px cyan;
+border:1px solid white;
+box-shadow:0 0 25px rgba(255,255,255,0.15);
+transition:0.1s;
 }
+.tap:active{transform:scale(0.95)}
 
 /* Small buttons */
 .btn{
-padding:12px 18px;
+padding:10px 16px;
 border-radius:10px;
-border:1px solid #8a2be2;
+border:1px solid white;
 background:none;
 color:white;
 margin:5px;
 }
 
-/* Bottom menu */
+/* Menu */
 .menu{
 position:fixed;
-bottom:0;
-left:0;
-width:100%;
+bottom:0;left:0;width:100%;
 display:flex;
 justify-content:space-around;
-background:#080f25;
-padding:10px 0;
-border-top:1px solid rgba(255,255,255,0.1);
+background:#050505;
+padding:8px;
+border-top:1px solid rgba(255,255,255,0.15);
 }
-
 .menu button{
-background:none;
-border:none;
-color:white;
-font-size:14px;
+background:none;border:none;color:white;font-size:12px;
 }
 
-.hidden{display:none;}
+.hidden{display:none}
+
+/* NFT cards */
+.nft{
+border:1px solid white;
+border-radius:14px;
+padding:10px;
+margin:8px;
+background:#050505;
+}
 </style>
 </head>
-
 <body>
 
-<h2>🌌 DarkEarn PRO</h2>
+<h2>BLACK EARN</h2>
 
+<!-- EARN -->
 <div id="earnTab" class="tab">
 <div class="card">
 <h3>Balance</h3>
 <h1 id="coins">0</h1>
-<h4>⚡ Energy: <span id="energy">100</span>/100</h4>
-<button class="tap" onclick="tap()">⚡ TAP</button>
+<p>⚡ Energy: <span id="energy">100</span>/100</p>
+<button class="tap" onclick="tap()">TAP</button>
 </div>
 </div>
 
+<!-- UPGRADES -->
 <div id="upgradeTab" class="tab hidden">
 <div class="card">
-<h3>🚀 Upgrades</h3>
+<h3>Upgrades</h3>
 <p>Tap Power: <span id="power">1</span></p>
-<button class="btn" onclick="upgrade()">Upgrade (50 coins)</button>
+<p>Auto Farm: <span id="farm">0</span>/sec</p>
+<button class="btn" onclick="upgradePower()">Upgrade Power (50)</button>
+<button class="btn" onclick="upgradeFarm()">Upgrade Farm (200)</button>
 </div>
 </div>
 
+<!-- TASKS -->
 <div id="tasksTab" class="tab hidden">
 <div class="card">
-<h3>🎁 Tasks</h3>
-<p>Join Telegram Channel</p>
-<button class="btn" onclick="claimTask()">Claim 100 coins</button>
+<h3>Tasks</h3>
+<button class="btn" onclick="daily()">Daily Reward</button>
+<button class="btn" onclick="taskReward()">Join Channel Reward</button>
 </div>
 </div>
 
+<!-- FRIENDS -->
 <div id="friendsTab" class="tab hidden">
 <div class="card">
-<h3>👥 Friends</h3>
-<p>Your referral link:</p>
+<h3>Referral</h3>
 <p id="refLink"></p>
 </div>
 </div>
 
+<!-- LEADERBOARD -->
 <div id="leaderTab" class="tab hidden">
 <div class="card">
-<h3>🏆 Leaderboard</h3>
-<p>1. CryptoKing — 99999</p>
-<p>2. DarkMiner — 50000</p>
-<p>3. You — <span id="coins2">0</span></p>
+<h3>Leaderboard</h3>
+<p>1 BlackFund — 999999</p>
+<p>2 DarkCrypto — 500000</p>
+<p>3 You — <span id="coins2">0</span></p>
 </div>
 </div>
 
+<!-- PROFILE -->
 <div id="profileTab" class="tab hidden">
 <div class="card">
-<h3>👤 Profile</h3>
+<h3>Profile</h3>
 <p id="username">Loading...</p>
+<p>Level: <span id="level">1</span></p>
 </div>
 </div>
 
-<!-- Bottom Menu -->
+<!-- NFT MARKET -->
+<div id="nftTab" class="tab hidden">
+<div class="card">
+<h3>NFT Market</h3>
+
+<div class="nft">
+<p>BLACK GENESIS NFT</p>
+<p>Price: 1000</p>
+<button class="btn" onclick="buyNFT('Genesis',1000)">Buy</button>
+</div>
+
+<div class="nft">
+<p>VOID SKIN NFT</p>
+<p>Price: 2500</p>
+<button class="btn" onclick="buyNFT('Void',2500)">Buy</button>
+</div>
+
+<h4>Your NFTs</h4>
+<div id="myNFTs"></div>
+
+</div>
+</div>
+
+<!-- MENU -->
 <div class="menu">
-<button onclick="showTab('earnTab')">🪙 Earn</button>
-<button onclick="showTab('upgradeTab')">🚀 Upgrades</button>
-<button onclick="showTab('tasksTab')">🎁 Tasks</button>
-<button onclick="showTab('friendsTab')">👥 Friends</button>
-<button onclick="showTab('leaderTab')">🏆 Top</button>
-<button onclick="showTab('profileTab')">👤 Profile</button>
+<button onclick="showTab('earnTab')">Earn</button>
+<button onclick="showTab('upgradeTab')">Upgrades</button>
+<button onclick="showTab('tasksTab')">Tasks</button>
+<button onclick="showTab('friendsTab')">Friends</button>
+<button onclick="showTab('leaderTab')">Top</button>
+<button onclick="showTab('nftTab')">NFT</button>
+<button onclick="showTab('profileTab')">Profile</button>
 </div>
 
 <script>
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-// Load data
-let coins = Number(localStorage.getItem("coins")) || 0;
-let power = Number(localStorage.getItem("power")) || 1;
-let energy = Number(localStorage.getItem("energy")) || 100;
+/* DATA */
+let coins = +localStorage.getItem("coins") || 0;
+let power = +localStorage.getItem("power") || 1;
+let farm = +localStorage.getItem("farm") || 0;
+let energy = +localStorage.getItem("energy") || 100;
+let level = +localStorage.
 
-// Telegram user
-if(tg.initDataUnsafe && tg.initDataUnsafe.user){
-document.getElementById("username").innerText = "@" + tg.initDataUnsafe.user.username;
-document.getElementById("refLink").innerText = "https://t.me/DarkEarnBot?start=" + tg.initDataUnsafe.user.id;
-}else{
-document.getElementById("username").innerText = "Guest";
-document.getElementById("refLink").innerText = "Open in Telegram";
+> Lancet:
+getItem("level") || 1;
+let nfts = JSON.parse(localStorage.getItem("nfts")||"[]");
+
+/* Telegram user */
+if(tg.initDataUnsafe.user){
+username.innerText = "@"+tg.initDataUnsafe.user.username;
+refLink.innerText = "https://t.me/DarkEarnBot?start="+tg.initDataUnsafe.user.id;
 }
 
-// UI update
+/* UI */
 function updateUI(){
-document.getElementById("coins").innerText = coins;
-document.getElementById("coins2").innerText = coins;
-document.getElementById("power").innerText = power;
-document.getElementById("energy").innerText = energy;
-localStorage.setItem("coins", coins);
-localStorage.setItem("power", power);
-localStorage.setItem("energy", energy);
+coinsEl = coins;
+document.getElementById("coins").innerText=coins;
+document.getElementById("coins2").innerText=coins;
+document.getElementById("power").innerText=power;
+document.getElementById("farm").innerText=farm;
+document.getElementById("energy").innerText=energy;
+document.getElementById("level").innerText=level;
+
+localStorage.setItem("coins",coins);
+localStorage.setItem("power",power);
+localStorage.setItem("farm",farm);
+localStorage.setItem("energy",energy);
+localStorage.setItem("level",level);
+localStorage.setItem("nfts",JSON.stringify(nfts));
+
+/* NFTs */
+myNFTs.innerHTML="";
+nfts.forEach(n=>myNFTs.innerHTML+="<p>"+n+"</p>");
 }
 updateUI();
 
-// Tap
+/* TAP */
 function tap(){
-if(energy <= 0){ alert("No energy"); return; }
-coins += power;
+if(energy<=0)return;
+coins+=power;
 energy--;
+level=Math.floor(coins/1000)+1;
 updateUI();
 }
 
-// Energy regen
+/* Energy regen */
 setInterval(()=>{
-if(energy < 100){
-energy++;
-updateUI();
-}
+if(energy<100)energy++;
 },2000);
 
-// Upgrade
-function upgrade(){
-if(coins >= 50){
-coins -= 50;
-power++;
+/* Auto farm */
+setInterval(()=>{
+coins+=farm;
 updateUI();
-alert("Upgrade successful!");
-}else{
-alert("Not enough coins");
+},1000);
+
+/* Upgrades */
+function upgradePower(){
+if(coins>=50){coins-=50;power++;updateUI();}
+}
+function upgradeFarm(){
+if(coins>=200){coins-=200;farm++;updateUI();}
+}
+
+/* Tasks */
+function daily(){
+if(!localStorage.getItem("daily")){
+coins+=500;
+localStorage.setItem("daily",Date.now());
+updateUI();
+alert("Daily claimed");
+}
+}
+function taskReward(){
+coins+=1000;
+updateUI();
+}
+
+/* NFT BUY */
+function buyNFT(name,price){
+if(coins>=price){
+coins-=price;
+nfts.push(name);
+updateUI();
+alert("NFT purchased: "+name);
 }
 }
 
-// Task reward 
-function claimTask(){
-coins += 100;
-updateUI();
-alert("Task completed!");
-}
-
-// Tabs system
+/* Tabs */
 function showTab(id){
-document.querySelectorAll(".tab").forEach(t=>{
-t.classList.add("hidden");
-});
+document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
 document.getElementById(id).classList.remove("hidden");
 }
 </script>
-
 </body>
 </html>
